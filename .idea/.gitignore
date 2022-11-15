@@ -1,0 +1,30 @@
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Default ignored files
+/shelf/
+/workspace.xml
+# User-specific stuff
+/tasks.xml
+/usage.statistics.xml
+/dictionaries
+
+# Generated files
+/contentModel.xml
+
+# Datasource local storage ignored files
+# Sensitive or high-churn files
+/dataSources/
+/dataSources.ids
+/dataSources.local.xml
+/sqlDataSources.xml
+/dynamic.xml
+/uiDesigner.xml
+/dbnavigator.xml
+
+# Gradle
+/gradle.xml
+/libraries
+
+# My Custom:
+/fileTemplates/includes/File\ Header.java

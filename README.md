@@ -1,0 +1,1 @@
+# NovoLux [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/AK1HIKO/NovoLux/blob/main/LICENSE)

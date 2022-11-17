@@ -1,0 +1,14 @@
+group 'com.akihiko.novolux.demo'
+version '0.0.1'
+
+dependencies {
+    implementation project(":engine")
+}
+
+jar{
+    manifest {
+        attributes(
+                "Main-Class": "com.akihiko.novolux.demo.Demo"
+        )
+    }
+}

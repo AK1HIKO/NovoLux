@@ -1,2 +1,6 @@
 rootProject.name = 'NovoLux'
 
+include ":ecs"
+include ":engine"
+include ":demo"
+

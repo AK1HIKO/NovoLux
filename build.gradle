@@ -1,19 +1,30 @@
-plugins {
-    id 'java'
-}
+subprojects{
+    apply plugin: 'java'
+    apply plugin: 'application'
 
-group 'com.akihiko.novolux'
-version '0.1.0-SNAPSHOT'
+    repositories {
+        mavenCentral()
+    }
 
-repositories {
-    mavenCentral()
-}
+    afterEvaluate{
+        task copyDependencies(type: Copy){
+            from configurations.runtimeClasspath.collect{it}
+            into "${buildDir}/libs/libs"
+        }
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-}
+        jar.doFirst {
+            manifest {
+                attributes(
+                        "Created-By": "AK1HIKO",
+                        "Class-Path": configurations.runtimeClasspath.collect{"libs/" + it.name.toString().replace(projectDir.toPath().toString() + "/", "")}.join(" ")
+                )
+            }
+        }
+    }
 
-test {
-    useJUnitPlatform()
+    build.finalizedBy "copyDependencies"
+
+    tasks.withType(Jar){
+        baseName = "$rootProject.name-$project.name"
+    }
 }

@@ -9,17 +9,17 @@ package com.akihiko.novolux.ecs;
 public class Entity {
 
     private final long id = ECSManager.generateEntityId();
-    public long getId() {
+    public final long getId() {
         return id;
     }
 
-    private EntityInfo entityInfo;
+    private EntityInfo entityInfo = null;
 
-    public EntityInfo getEntityInfo() {
+    public final EntityInfo getEntityInfo() {
         return entityInfo;
     }
 
-    public Entity setEntityInfo(EntityInfo entityInfo) {
+    public final Entity setEntityInfo(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
         return this;
     }

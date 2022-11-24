@@ -82,7 +82,7 @@ public class EntityArchetype {
     }
 
     public List<Integer> getComponentTypes() {
-        return componentTypes;
+        return Collections.unmodifiableList(componentTypes);
     }
 
     public EntityArchetype setComponentTypes(List<Integer> componentTypes) {
@@ -90,11 +90,12 @@ public class EntityArchetype {
         return this;
     }
 
-    public Map<Integer, ComponentGroup> getComponentGroups() {
+    // Without access modifier to isolate them to one package
+    Map<Integer, ComponentGroup> getComponentGroups() {
         return componentGroups;
     }
 
-    public Map<Integer, EntityArchetypeRelation> getRelatedArchetypes() {
+    Map<Integer, EntityArchetypeRelation> getRelatedArchetypes() {
         return relatedArchetypes;
     }
 }

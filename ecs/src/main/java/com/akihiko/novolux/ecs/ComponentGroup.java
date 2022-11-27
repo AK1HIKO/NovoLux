@@ -33,4 +33,9 @@ public class ComponentGroup {
     public <T extends Component> List<T> getComponents() {
         return (List<T>) components;
     }
+
+    public ComponentGroup addComponent(Component component){
+        this.components.add(component);
+        return this;
+    }
 }

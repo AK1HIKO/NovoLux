@@ -16,10 +16,10 @@ public class EntityArchetype {
         return id;
     }
 
-    private List<Integer> componentTypes;
+    private List<Integer> componentTypes = new ArrayList<>();
 
     // Map<ComponentId, ComponentGroup>.
-    private Map<Integer, ComponentGroup> componentGroups = new HashMap<>();
+    private final Map<Integer, ComponentGroup> componentGroups = new HashMap<>();
     public <T extends Component> ComponentGroup getComponentGroup(int key){
         return this.componentGroups.get(key);
     }
@@ -27,18 +27,26 @@ public class EntityArchetype {
     // Map<ComponentId, EntityArchetype>
     // This is used for optimization, when we add/remove components. It effectively
     // represents a graph of EntityArchetype relations.
-    private Map<Integer, EntityArchetypeRelation> relatedArchetypes = new HashMap<>();
+    private final Map<Integer, EntityArchetypeRelation> relatedArchetypes = new HashMap<>();
     public EntityArchetypeRelation getArchetypeRelation(int modifiedComponentId) {
         return this.relatedArchetypes.get(modifiedComponentId);
+    }
+
+    public EntityArchetype(Integer componentId, Component component) {
+        componentTypes.add(componentId);
+        componentGroups.put(componentId, new ComponentGroup(componentId).addComponent(component));
     }
 
     public EntityArchetype(List<Integer> componentTypes){
         this.componentTypes = componentTypes;
     }
 
-    class EntityArchetypeRelation{
-        private EntityArchetype promotedArchetype;
-        private EntityArchetype demotedArchetype;
+    public static class EntityArchetypeRelation{
+        private EntityArchetype promotedArchetype = null;
+        private EntityArchetype demotedArchetype = null;
+
+        public EntityArchetypeRelation() {
+        }
 
         public EntityArchetypeRelation(EntityArchetype promotedArchetype, EntityArchetype demotedArchetype) {
             this.promotedArchetype = promotedArchetype;
@@ -97,6 +105,23 @@ public class EntityArchetype {
 
     Map<Integer, EntityArchetypeRelation> getRelatedArchetypes() {
         return relatedArchetypes;
+    }
+
+
+    // TODO: Improve:
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof EntityArchetype other))
+            return false;
+
+        return this.id == other.id;
     }
 }
 

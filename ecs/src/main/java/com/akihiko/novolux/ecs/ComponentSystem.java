@@ -1,7 +1,6 @@
 package com.akihiko.novolux.ecs;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -10,6 +9,12 @@ import java.util.Map;
  * @created 15/11/22
  */
 public abstract class ComponentSystem {
+
+    protected static int generateComponentSystemId(){
+        return ECSManager.generateComponentSystemId();
+    }
+
+    public abstract int ID();
 
     private final EntitiesQuery dependencies;
     public final EntitiesQuery getDependencies() {
@@ -21,10 +26,25 @@ public abstract class ComponentSystem {
         this.dependencies = dependencies;
     }
 
-    public abstract void onStart(final List<EntityQueryResult> eComponents);
+    public void onUpdate(final List<EntityQueryResult> eComponents, float deltaTime){}
 
-    public abstract void onUpdate(final List<EntityQueryResult> eComponents, float deltaTime);
+    public void onDestroy(final List<EntityQueryResult> eComponents){}
 
-    public abstract void onDestroy(final List<EntityQueryResult> eComponents);
+
+    // TODO: Improve
+    @Override
+    public final int hashCode() {
+        return Long.hashCode(this.ID());
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ComponentSystem other))
+            return false;
+
+        return this.ID() == other.ID();
+    }
 
 }

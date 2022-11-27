@@ -23,4 +23,20 @@ public class Entity {
         this.entityInfo = entityInfo;
         return this;
     }
+
+    // TODO: Improve:
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Entity other))
+            return false;
+
+        return this.id == other.id;
+    }
 }

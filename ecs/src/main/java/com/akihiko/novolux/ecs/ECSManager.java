@@ -16,6 +16,7 @@ public class ECSManager {
     private static final AtomicLong entityIdCounter = new AtomicLong();
     private static final AtomicLong entityArchetypeIdCounter = new AtomicLong();
     private static final AtomicInteger componentIdCounter = new AtomicInteger();
+    private static final AtomicInteger componentSystemIdCounter = new AtomicInteger();
 
     // No access modifier, so that they can be used in the same package.
     static long generateEntityId(){
@@ -26,6 +27,9 @@ public class ECSManager {
     }
     static int generateComponentId(){
         return componentIdCounter.getAndIncrement();
+    }
+    static int generateComponentSystemId(){
+        return componentSystemIdCounter.getAndIncrement();
     }
 
     /**
@@ -39,25 +43,38 @@ public class ECSManager {
     private final Map<Long, EntityArchetype> archetypes = new HashMap<>();
 
     //region ECS Life-cycle Implementation:
-    private final Set<ComponentSystem> componentSystems = new HashSet<>();
+    /**
+     * Must only be used for general {@link ComponentSystem}. That is Systems that follow the automatic {@link ECSManager} lifecycle.
+     * If you wish to manually control a lifecycle of a particular {@link ComponentSystem} (e.g. Physics always executed at constant intervals,
+     * or Renderer always executed last) do not add it into this {@link HashSet}.
+     */
+    private final Set<ComponentSystem> generalComponentSystems = new HashSet<>();
 
-    public boolean addComponentSystem(ComponentSystem newComponentSystem){
-        return componentSystems.add(newComponentSystem);
+    public boolean addGeneralComponentSystem(ComponentSystem newComponentSystem){
+        return generalComponentSystems.add(newComponentSystem);
     }
 
-    public Set<ComponentSystem> getComponentSystems() {
+    public boolean removeGeneralComponentSystem(){
+        // TODO: Not Implemented yet
+        throw new UnsupportedOperationException();
+//        return false;
+    }
+
+    public Set<ComponentSystem> getGeneralComponentSystems() {
         // Prevents user from directly modifying the componentSystems set.
-        return Collections.unmodifiableSet(componentSystems);
+        return Collections.unmodifiableSet(generalComponentSystems);
     }
+
+
     //endregion
 
     /**
-     * Queue&lt;Pair&lt;EntityId, Component&gt&gt;
+     * Queue&lt;Pair&lt;EntityId, Component&gt;&gt;
      */
     private final Queue<AbstractMap.SimpleImmutableEntry<Long, Component>> emplacedComponentsQueue = new LinkedList<>();
 
     /**
-     * Queue&lt;Pair&lt;EntityId, ComponentId&gt&gt;
+     * Queue&lt;Pair&lt;EntityId, ComponentId&gt;&gt;
      */
     private final Queue<AbstractMap.SimpleImmutableEntry<Long, Integer>> erasedComponentsQueue = new LinkedList<>();
 
@@ -78,12 +95,12 @@ public class ECSManager {
     }
 
     /**
-     * Queue&lt;Pair&lt;EntityId, Entity&gt&gt;
+     * Queue&lt;Entity&gt;
      */
     private final Queue<Entity> newEntitiesQueue = new LinkedList<>();
 
     /**
-     * Queue&lt;Pair&lt;EntityId, Entity&gt&gt;
+     * Queue&lt;Entity&gt;
      */
     private final Queue<Entity> deletedEntitiesQueue = new LinkedList<>();
     public Entity createEntity(){
@@ -113,7 +130,7 @@ public class ECSManager {
         return result;
     }
 
-    public void preStart(){
+    public void lifecycleStart(){
         while(!newEntitiesQueue.isEmpty()){
             Entity newEntity = newEntitiesQueue.remove();
             entities.put(newEntity.getId(), newEntity);
@@ -125,7 +142,7 @@ public class ECSManager {
         }
     }
 
-    public void postDestroy(){
+    public void lifecycleEnd(){
         while(!erasedComponentsQueue.isEmpty()){
             AbstractMap.SimpleImmutableEntry<Long, Integer> erasedComponent = erasedComponentsQueue.remove();
             this.removeComponent(erasedComponent.getKey(), erasedComponent.getValue());
@@ -147,7 +164,7 @@ public class ECSManager {
     private final Map<Integer, Set<Long>> cidToArchetypeIds = new HashMap<>();
 
     /**
-     * Map&lt;ComponentTypes, EntityArchetypeId&rt;
+     * Map&lt;ComponentTypes(Immutable), EntityArchetypeId&gt;
      * Used to find all the entities that have a particular archetype.
      */
     private final Map<List<Integer>, Long> ctypesToArchetypeId = new HashMap<>();
@@ -164,7 +181,7 @@ public class ECSManager {
 
             // Add it into the "archetypes" maps for proper indexing.
             archetypes.put(archetype.getId(), archetype);
-            ctypesToArchetypeId.put(requiredComponents, archetype.getId());
+            ctypesToArchetypeId.put(Collections.unmodifiableList(requiredComponents), archetype.getId());
 
             boolean isFirst = true;
             Set<Long> archetypeIntersectionSet = new HashSet<>();
@@ -267,18 +284,60 @@ public class ECSManager {
         return componentGroup.getComponent(entityInfo.getEntityRow());
     }
 
+
+    private void initializeEntityInfo(Entity entity, Component initialComponent){
+        EntityArchetype newArchetype = new EntityArchetype(initialComponent.ID(), initialComponent);
+        this.addNewArchetype(newArchetype);
+        entity.getEntityInfo().setArchetype(newArchetype);
+        entity.getEntityInfo().setEntityRow(0);
+    }
     private boolean addComponent(long entityId, Component newComponent){
         Entity entity = this.getEntity(entityId);
         EntityInfo entityInfo = entity.getEntityInfo();
-        if(entityInfo == null)
-            return false;
+        if(entityInfo == null){
+            entityInfo = new EntityInfo();
+            entity.setEntityInfo(entityInfo);
+            Set<Long> archetypeIds = cidToArchetypeIds.get(newComponent.ID());
+            if(archetypeIds == null){
+                this.initializeEntityInfo(entity, newComponent);
+            }else {
+                List<EntityArchetype> fitting = archetypeIds.stream().filter(archetypeId -> {
+                    EntityArchetype archetype = archetypes.get(archetypeId);
+                    if (archetype == null)
+                        return false;
+                    return archetype.getComponentTypes().size() == 1 && archetype.getComponentTypes().contains(newComponent.ID());
+                }).map(archetypes::get).toList();
+
+                if (fitting.size() > 1)
+                    throw new ECSRuntimeException("Something went wrong! Multiple archetypes with the same components list!");
+                // If no already existing archetype with the given parameters, create archetype from the ground up:
+                if (fitting.size() == 0) {
+                    this.initializeEntityInfo(entity, newComponent);
+                } else {
+                    EntityArchetype archetype = fitting.get(0);
+                    archetype.getComponentGroup(newComponent.ID()).getComponents().add(newComponent);
+                    entity.getEntityInfo().setEntityRow(archetype.getComponentGroup(newComponent.ID()).getComponents().size()-1);
+                    entity.getEntityInfo().setArchetype(archetype);
+                }
+            }
+            newComponent.bind(entityId, this);
+            return true;
+        }
         EntityArchetype archetype = entityInfo.getArchetype();
 
         if(this.hasComponent(entity, newComponent.ID()))  // If already contains a component with the same type:
             throw new ECSRuntimeException("Trying to add multiple components of the same type!");
 
-        EntityArchetype promotedArchetype = archetype.getArchetypeRelation(newComponent.ID()).getPromotedArchetype();
-        if(promotedArchetype == null){  // If no cached promotedArchetype. Try to lazy-initialize our graph:
+        newComponent.bind(entityId, this);
+
+        EntityArchetype.EntityArchetypeRelation relation = archetype.getArchetypeRelation(newComponent.ID());
+        EntityArchetype promotedArchetype = null;
+        if(relation == null) {
+            archetype.getRelatedArchetypes().put(newComponent.ID(), new EntityArchetype.EntityArchetypeRelation());
+        }else{
+            promotedArchetype = relation.getPromotedArchetype();
+        }
+        if (promotedArchetype == null) {  // If no cached promotedArchetype. Try to lazy-initialize our graph:
             // Look-up whether the required archetype already exists in our "archetypes" map.
             List<Integer> newArchetypeTypes = new ArrayList<>(archetype.getComponentTypes());
             newArchetypeTypes.add(newComponent.ID());
@@ -286,13 +345,12 @@ public class ECSManager {
             newArchetypeTypes.sort(Comparator.naturalOrder());
 
             promotedArchetype = archetypes.get(ctypesToArchetypeId.get(newArchetypeTypes));
-            if(promotedArchetype == null){  // If no existing archetype in the "archetypes" map with the same List of ComponentTypes.
+            if (promotedArchetype == null) {  // If no existing archetype in the "archetypes" map with the same List of ComponentTypes.
                 // Create archetype from scratch.
                 promotedArchetype = new EntityArchetype(newArchetypeTypes);
                 this.addNewArchetype(promotedArchetype);
             }
         }
-
         int newEntityRow = 0;
         for(Map.Entry<Integer, ComponentGroup> entry : promotedArchetype.getComponentGroups().entrySet()){
             // Add same components to the new archetype.
@@ -316,9 +374,16 @@ public class ECSManager {
         EntityArchetype archetype = entityInfo.getArchetype();
 
         if(!this.hasComponent(entity, componentId))  // If does not contain the specified component:
-            throw new ECSRuntimeException("Trying to add multiple components of the same type!");
+            throw new ECSRuntimeException("Trying to remove a component that does not exist!");
 
-        EntityArchetype demotedArchetype = archetype.getArchetypeRelation(componentId).getDemotedArchetype();
+        EntityArchetype.EntityArchetypeRelation relation = archetype.getArchetypeRelation(componentId);
+        EntityArchetype demotedArchetype = null;
+        if(relation == null) {
+            archetype.getRelatedArchetypes().put(componentId, new EntityArchetype.EntityArchetypeRelation());
+        }else{
+            demotedArchetype = relation.getDemotedArchetype();
+        }
+
         if(demotedArchetype == null){   // If no cached demotedArchetype. Try to lazy-initialize our graph:
             // Look-up whether the required archetype already exists in our "archetypes" map.
             List<Integer> newArchetypeTypes = new ArrayList<>(archetype.getComponentTypes());
@@ -338,7 +403,7 @@ public class ECSManager {
         int newEntityRow = 0;
         for(Map.Entry<Integer, ComponentGroup> entry : demotedArchetype.getComponentGroups().entrySet()){
             // Add same components to the new archetype.
-            entry.getValue().getComponents().add(getComponent(entityId, entry.getKey()));
+            entry.getValue().getComponents().add(this.getComponent(entityId, entry.getKey()));
 
             // And assign the newEntityRow:
             newEntityRow = entry.getValue().getComponents().size()-1;
@@ -357,12 +422,15 @@ public class ECSManager {
     private void addNewArchetype(EntityArchetype newArchetype){
         // Add it into the "archetypes" maps for proper indexing.
         archetypes.put(newArchetype.getId(), newArchetype);
+        // getComponentTypes already returns an immutable list:
         ctypesToArchetypeId.put(newArchetype.getComponentTypes(), newArchetype.getId());
 
         // Also add it into the "components" map for proper "has".
         for (int componentTypeId : newArchetype.getComponentTypes()) {
             cidToArchetypeIds.putIfAbsent(componentTypeId, new HashSet<>());
             cidToArchetypeIds.get(componentTypeId).add(newArchetype.getId());
+
+            newArchetype.getComponentGroups().putIfAbsent(componentTypeId, new ComponentGroup(componentTypeId));
         }
     }
 

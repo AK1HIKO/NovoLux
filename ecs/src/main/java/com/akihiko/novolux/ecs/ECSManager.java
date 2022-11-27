@@ -192,8 +192,10 @@ public class ECSManager {
 
                 // If no such archetype, then there will be no intersection, so we can
                 // simply prematurely exit the loop:
-                if(archetypeSet == null)
+                if(archetypeSet == null) {
+                    archetypeIntersectionSet = new HashSet<>();
                     break;
+                }
 
                 archetypeSet.add(archetype.getId());
 

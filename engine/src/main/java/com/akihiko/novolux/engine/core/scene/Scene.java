@@ -1,6 +1,10 @@
 package com.akihiko.novolux.engine.core.scene;
 
+import com.akihiko.novolux.ecs.ComponentSystem;
 import com.akihiko.novolux.ecs.ECSManager;
+import com.akihiko.novolux.engine.Application;
+import com.akihiko.novolux.engine.core.graphics.g3d.Mesh;
+import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 
 /**
  *
@@ -8,17 +12,52 @@ import com.akihiko.novolux.ecs.ECSManager;
  * @project NovoLux
  * @created 15/11/22
  */
-public class Scene {
+public abstract class Scene {
 
-    private final ECSManager ECSManager;
+    protected final ECSManager ECSManager = new ECSManager();
 
-    public Scene(ECSManager ECSManager) {
-        this.ECSManager = ECSManager;
+
+    public abstract void create();
+
+    private long previousFrame = 0L;
+    private float getDeltaTime(){
+        float deltaTime = previousFrame/100_000_000_000_000f;
+        previousFrame = System.nanoTime();
+        return deltaTime;
     }
+    public final void update(){
+        float deltaTime = getDeltaTime();
+        this.ECSManager.lifecycleStart();
 
-    private void update(){
+        for(ComponentSystem system : this.ECSManager.getGeneralComponentSystems()){
+            system.onUpdate(this.ECSManager.queryEntities(system.getDependencies()), deltaTime);
+        }
 
-//        float deltaTime = 0.0f;
+//        Mesh cube = new Mesh(new Vector4[]{
+//                new Vector4(0, 0, 0),
+//                new Vector4(1, 0, 0),
+//                new Vector4(1, 1, 0),
+//                new Vector4(0, 1, 0),
+//                new Vector4(0, 1, 1),
+//                new Vector4(1, 1, 1),
+//                new Vector4(1, 0, 1),
+//                new Vector4(0, 0, 1),
+//        }, new Face[]{
+//                new Face(0, 2, 1), //face front
+//                new Face(0, 3, 2),
+//                new Face(2, 3, 4), //face top
+//                new Face(2, 4, 5),
+//                new Face(1, 2, 5), //face right
+//                new Face(1, 5, 6),
+//                new Face(0, 7, 4), //face left
+//                new Face(0, 4, 3),
+//                new Face(5, 4, 7), //face back
+//                new Face(5, 7, 6),
+//                new Face(0, 6, 7), //face bottom
+//                new Face(0, 1, 6)
+//        });
+        Application.getInstance().getGameView().render();
+        this.ECSManager.lifecycleEnd();
 //        for(ComponentSystem system : this.ECSManager.getComponentSystems()){
 //            system.onUpdate(this.ECSManager.queryEntities(system.getDependencies()), deltaTime);
 //        }

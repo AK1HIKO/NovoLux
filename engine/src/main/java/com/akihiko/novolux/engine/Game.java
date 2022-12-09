@@ -1,5 +1,7 @@
 package com.akihiko.novolux.engine;
 
+import com.akihiko.novolux.engine.core.scene.Scene;
+
 /**
  *
  * @author AK1HIKO
@@ -8,29 +10,11 @@ package com.akihiko.novolux.engine;
  */
 public class Game implements Runnable{
 
-    private static Game instance;
-
-    public static Game getInstance() {
-        return instance;
-    }
-
-    public static boolean initialize(String title, int width){
-        return initialize(title, width, 16d/9);
-    }
-
-    public static boolean initialize(String title, int width, double ratio){
-        if(Game.instance != null)
-            return false;
-
-        Game.instance = new Game(title, width, (int) (width/ratio));
-        return true;
-    }
-
-
-    private Window gameWindow;
-    private Game(String title, int width, int height) {
-        gameWindow = new Window(title, width, height);
-        gameWindow.display();
+    private Scene currentScene;
+    public void loadScene(Scene newScene){
+        // Synchronize somehow.
+        this.currentScene = newScene;
+        this.currentScene.create();
     }
 
     private Thread mainThread;
@@ -55,7 +39,8 @@ public class Game implements Runnable{
     @Override
     public void run() {
         while(isRunning){
-            this.gameWindow.gameView.render();
+            this.currentScene.update();
+//            this.gameWindow.getGameView().render();
         }
     }
 }

@@ -12,12 +12,13 @@ import com.akihiko.novolux.engine.utils.NovoLuxRuntimeException;
 public class CameraComponent extends Component {
 
     public static final int id = Component.generateComponentId();
+
     @Override
     public int ID() {
         return id;
     }
 
-    public enum ProjectionType{
+    public enum ProjectionType {
         PERSPECTIVE, ORTHOGONAL
     }
 
@@ -54,7 +55,7 @@ public class CameraComponent extends Component {
     }
 
     public Matrix4x4 getViewProjectionMatrix() {
-        if(viewProjectionMatrix == null)
+        if (viewProjectionMatrix == null)
             throw new NovoLuxRuntimeException("Camera's View Projection Matrix is uninitialized!");
         return viewProjectionMatrix;
     }

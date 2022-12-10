@@ -12,14 +12,16 @@ import com.akihiko.novolux.engine.core.rendering.Texture;
 public class MeshRendererComponent extends Component {
 
     public static final int id = Component.generateComponentId();
+
     @Override
     public int ID() {
         return MeshRendererComponent.id;
     }
 
-    public enum MeshRenderingType{
+    public enum MeshRenderingType {
         SOLID, WIREFRAME
     }
+
     private Mesh mesh;
     private Texture texture;
     private MeshRenderingType renderingType;

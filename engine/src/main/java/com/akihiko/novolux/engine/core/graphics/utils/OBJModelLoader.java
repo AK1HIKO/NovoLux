@@ -1,11 +1,8 @@
 package com.akihiko.novolux.engine.core.graphics.utils;
 
 import com.akihiko.novolux.ecs.ECSRuntimeException;
-import com.akihiko.novolux.engine.core.graphics.g3d.Mesh;
 import com.akihiko.novolux.engine.core.graphics.g3d.Model;
-import com.akihiko.novolux.engine.core.graphics.g3d.geometry.Vertex;
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 
 import java.io.File;
@@ -13,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author AK1HIKO
@@ -47,7 +43,7 @@ public class OBJModelLoader implements ModelLoader {
             if (ln == null || ln.trim().isEmpty() || ln.startsWith("#"))
                 continue;
 
-            switch (tokens[0]){
+            switch (tokens[0]) {
                 case "v":
                     interm.positions.add(new Vector4(
                             Float.parseFloat(tokens[1]),
@@ -70,9 +66,8 @@ public class OBJModelLoader implements ModelLoader {
                     ));
                     break;
                 case "f":
-                    for(int i = 0; i < tokens.length - 3; i++)
-                    {
-                        interm.indices.add(parseIndex(tokens[1    ], interm));
+                    for (int i = 0; i < tokens.length - 3; i++) {
+                        interm.indices.add(parseIndex(tokens[1], interm));
                         interm.indices.add(parseIndex(tokens[2 + i], interm));
                         interm.indices.add(parseIndex(tokens[3 + i], interm));
                     }
@@ -83,23 +78,19 @@ public class OBJModelLoader implements ModelLoader {
         return interm.toModel();
     }
 
-    private Index parseIndex(String token, OBJModel out)
-    {
+    private Index parseIndex(String token, OBJModel out) {
         String[] values = token.split("/");
 
         Index result = new Index();
         result.ivert = Integer.parseInt(values[0]) - 1;
 
-        if(values.length > 1)
-        {
-            if(!values[1].isEmpty())
-            {
+        if (values.length > 1) {
+            if (!values[1].isEmpty()) {
                 out.hasTexCoords = true;
                 result.itexCoord = Integer.parseInt(values[1]) - 1;
             }
 
-            if(values.length > 2)
-            {
+            if (values.length > 2) {
                 out.hasNormals = true;
                 result.inormal = Integer.parseInt(values[2]) - 1;
             }
@@ -108,7 +99,7 @@ public class OBJModelLoader implements ModelLoader {
         return result;
     }
 
-    private static class OBJModel{
+    private static class OBJModel {
 
         private List<Vector4> positions = new ArrayList<>();
         private List<Vector2> texCoords = new ArrayList<>();
@@ -118,7 +109,7 @@ public class OBJModelLoader implements ModelLoader {
         private boolean hasTexCoords = false;
         private boolean hasNormals = false;
 
-        Model toModel(){
+        Model toModel() {
             Model result = new Model();
             Model normalModel = new Model();
             Map<Index, Integer> resultIndexMap = new HashMap<>();
@@ -165,17 +156,16 @@ public class OBJModelLoader implements ModelLoader {
                 indexMap.put(modelVertexIndex, normalModelIndex);
             }
 
-            if(!hasNormals)
-            {
+            if (!hasNormals) {
                 normalModel.calculateNormals();
 
-                for(int i = 0; i < result.getPositions().size(); i++)
+                for (int i = 0; i < result.getPositions().size(); i++)
                     result.getNormals().add(normalModel.getNormals().get(indexMap.get(i)));
             }
 
             normalModel.calculateTangents();
 
-            for(int i = 0; i < result.getPositions().size(); i++)
+            for (int i = 0; i < result.getPositions().size(); i++)
                 result.getTangents().add(normalModel.getTangents().get(indexMap.get(i)));
 
             return result;
@@ -183,15 +173,13 @@ public class OBJModelLoader implements ModelLoader {
 
     }
 
-    private static class Index
-    {
+    private static class Index {
         private int ivert;
         private int itexCoord;
         private int inormal;
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (this == obj)
                 return true;
             if (!(obj instanceof Index other))
@@ -203,8 +191,7 @@ public class OBJModelLoader implements ModelLoader {
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(ivert, itexCoord, inormal);
         }
     }

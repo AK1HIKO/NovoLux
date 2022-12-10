@@ -1,6 +1,5 @@
 package com.akihiko.novolux.engine.core.graphics.utils;
 
-import com.akihiko.novolux.engine.core.graphics.g3d.Mesh;
 import com.akihiko.novolux.engine.core.graphics.g3d.Model;
 
 import java.nio.file.Path;

@@ -4,10 +4,8 @@ import com.akihiko.novolux.ecs.Component;
 import com.akihiko.novolux.engine.core.math.tensors.matrix.Matrix4x4;
 import com.akihiko.novolux.engine.core.math.tensors.quaternion.Quaternion;
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 
 /**
- *
  * @author AK1HIKO
  * @project NovoLux
  * @created 15/11/22
@@ -41,11 +39,11 @@ public class TransformComponent extends Component {
         this.scale = scale;
     }
 
-    public void rotate(Quaternion rotation){
+    public void rotate(Quaternion rotation) {
         this.rotation = this.rotation.multiply(rotation).normalized();
     }
 
-    public Matrix4x4 getTransformationMatrix(){
+    public Matrix4x4 getTransformationMatrix() {
         Matrix4x4 translation = Matrix4x4.TRANSLATION(this.position);
         Matrix4x4 rotation = Matrix4x4.ROTATION(this.rotation);
         Matrix4x4 scale = Matrix4x4.SCALE(this.scale);

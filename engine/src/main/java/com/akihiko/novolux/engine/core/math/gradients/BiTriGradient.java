@@ -4,6 +4,7 @@ import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
 
 /**
  * Bilinear interpolation 3-value gradient.
+ *
  * @author AK1HIKO
  * @project NovoLux
  * @created 29/11/22

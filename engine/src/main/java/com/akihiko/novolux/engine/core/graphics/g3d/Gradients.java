@@ -25,9 +25,9 @@ public class Gradients {
 
     public Gradients(Vertex minY, Vertex midY, Vertex maxY) {
         float[] invZArr = new float[]{
-                    1.0f / minY.position().getW(),
-                    1.0f / midY.position().getW(),
-                    1.0f / maxY.position().getW()
+                1.0f / minY.position().getW(),
+                1.0f / midY.position().getW(),
+                1.0f / maxY.position().getW()
         };
         Vector2[] reducedPositions = new Vector2[]{
                 new Vector2(minY.position()),
@@ -56,7 +56,7 @@ public class Gradients {
         );
 
         this.zDepthGradient = new TriGradient(
-                new float[] {
+                new float[]{
                         minY.position().getZ(),
                         midY.position().getZ(),
                         maxY.position().getZ()
@@ -67,7 +67,7 @@ public class Gradients {
         );
     }
 
-    public Vector2 getTexCoord(int i){
+    public Vector2 getTexCoord(int i) {
         return this.texCoordsBiGradient.getPoint(i);
     }
 
@@ -79,14 +79,15 @@ public class Gradients {
         return invZGradient;
     }
 
-    public TriGradient getZDepthGradient(){
+    public TriGradient getZDepthGradient() {
         return this.zDepthGradient;
     }
 
-    public float getInvZ(int i){
+    public float getInvZ(int i) {
         return this.invZGradient.getPoint(i);
     }
-    public float getZDepth(int i){
+
+    public float getZDepth(int i) {
         return this.zDepthGradient.getPoint(i);
     }
 

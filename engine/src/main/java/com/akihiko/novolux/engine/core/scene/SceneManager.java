@@ -10,5 +10,4 @@ public class SceneManager {
     private Scene currentScene;
 
 
-
 }

@@ -1,8 +1,6 @@
 package com.akihiko.novolux.engine.core.graphics.g3d;
 
 import com.akihiko.novolux.engine.core.graphics.g3d.geometry.Vertex;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +10,14 @@ import java.util.List;
  * @project NovoLux
  * @created 26/11/22
  */
-public class Mesh{
+public class Mesh {
 
     private final List<Vertex> verts;
     private final List<Integer> indices;
 
-    public Mesh(Model model){
+    public Mesh(Model model) {
         this.verts = new ArrayList<>();
-        for(int i = 0; i < model.getPositions().size(); i++){
+        for (int i = 0; i < model.getPositions().size(); i++) {
             this.verts.add(new Vertex(model.getPositions().get(i), model.getTexCoords().get(i)));
         }
         this.indices = model.getIndices();

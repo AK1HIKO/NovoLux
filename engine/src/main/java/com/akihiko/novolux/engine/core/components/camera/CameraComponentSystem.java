@@ -1,12 +1,10 @@
 package com.akihiko.novolux.engine.core.components.camera;
 
 import com.akihiko.novolux.ecs.ComponentSystem;
-import com.akihiko.novolux.ecs.ECSRuntimeException;
 import com.akihiko.novolux.ecs.EntitiesQuery;
 import com.akihiko.novolux.ecs.EntityQueryResult;
 import com.akihiko.novolux.engine.core.components.TransformComponent;
 import com.akihiko.novolux.engine.core.math.tensors.matrix.Matrix4x4;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
 import com.akihiko.novolux.engine.utils.NovoLuxRuntimeException;
 
 import java.util.List;
@@ -19,6 +17,7 @@ import java.util.List;
 public class CameraComponentSystem extends ComponentSystem {
 
     private static final int id = ComponentSystem.generateComponentSystemId();
+
     @Override
     public int ID() {
         return CameraComponentSystem.id;
@@ -36,12 +35,12 @@ public class CameraComponentSystem extends ComponentSystem {
     @Override
     public void onUpdate(List<EntityQueryResult> eComponents, float deltaTime) {
         boolean newMain = false;
-        for(EntityQueryResult qr : eComponents){
+        for (EntityQueryResult qr : eComponents) {
             CameraComponent camera = (CameraComponent) qr.components().get(CameraComponent.id);
-            if(camera.isMain()){
-                if(newMain) {
+            if (camera.isMain()) {
+                if (newMain) {
                     throw new NovoLuxRuntimeException("Multiple Main Cameras in one scene!");
-                }else{
+                } else {
                     mainCamera = camera;
                     newMain = true;
                 }
@@ -52,7 +51,7 @@ public class CameraComponentSystem extends ComponentSystem {
 
     }
 
-    private Matrix4x4 calculateViewProjectionMatrix(CameraComponent camera, TransformComponent transform){
+    private Matrix4x4 calculateViewProjectionMatrix(CameraComponent camera, TransformComponent transform) {
         return camera.projectionMatrix.multiply(Matrix4x4.ROTATION(transform.getRotation().conjugate()).multiply(Matrix4x4.TRANSLATION(transform.getPosition().multiply(-1f))));
     }
 

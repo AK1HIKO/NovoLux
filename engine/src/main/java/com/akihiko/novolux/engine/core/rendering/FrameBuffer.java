@@ -1,6 +1,5 @@
 package com.akihiko.novolux.engine.core.rendering;
 
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 
 import java.util.Arrays;
@@ -25,11 +24,11 @@ public class FrameBuffer {
         this.data = new byte[this.size * 4];
     }
 
-    public void fill(byte grayscale){
+    public void fill(byte grayscale) {
         Arrays.fill(this.data, grayscale);
     }
 
-    public void setPixel(int x, int y, byte a, byte r, byte g, byte b){
+    public void setPixel(int x, int y, byte a, byte r, byte g, byte b) {
         int i = (x + y * this.width) * 4;
         this.data[i + 0] = a;
 
@@ -38,7 +37,7 @@ public class FrameBuffer {
         this.data[i + 1] = b;
     }
 
-    public void setPixel(int index, byte a, byte r, byte g, byte b){
+    public void setPixel(int index, byte a, byte r, byte g, byte b) {
         int i = index * 4;
         this.data[i + 0] = a;
 
@@ -47,7 +46,7 @@ public class FrameBuffer {
         this.data[i + 1] = b;
     }
 
-    public Vector4 getPixel(int x, int y){
+    public Vector4 getPixel(int x, int y) {
         int i = (x + y * this.width) * 4;
         return new Vector4(
                 this.data[i + 0],
@@ -57,12 +56,12 @@ public class FrameBuffer {
         );
     }
 
-    public byte getByte(int i){
+    public byte getByte(int i) {
         return this.data[i];
     }
 
-    public void renderToBuffer(byte[] destBuffer){
-        for(int i = 0; i < this.size; i++){
+    public void renderToBuffer(byte[] destBuffer) {
+        for (int i = 0; i < this.size; i++) {
             int destIndex = i * 3;
             int srcIndex = i * 4;
             // BufferedImage is BGR, so discard Alpha channel:

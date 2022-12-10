@@ -1,7 +1,6 @@
 package com.akihiko.novolux.engine.core.components;
 
 import com.akihiko.novolux.ecs.Component;
-import com.akihiko.novolux.ecs.ECSManager;
 
 /**
  * @author AK1HIKO

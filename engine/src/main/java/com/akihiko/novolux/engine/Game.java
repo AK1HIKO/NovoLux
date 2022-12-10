@@ -3,15 +3,15 @@ package com.akihiko.novolux.engine;
 import com.akihiko.novolux.engine.core.scene.Scene;
 
 /**
- *
  * @author AK1HIKO
  * @project NovoLux
  * @created 15/11/22
  */
-public class Game implements Runnable{
+public class Game implements Runnable {
 
     private Scene currentScene;
-    public void loadScene(Scene newScene){
+
+    public void loadScene(Scene newScene) {
         // Synchronize somehow.
         this.currentScene = newScene;
         this.currentScene.create();
@@ -20,7 +20,7 @@ public class Game implements Runnable{
     private Thread mainThread;
     private boolean isRunning = false;
 
-    public synchronized void start(){
+    public synchronized void start() {
         this.isRunning = true;
         this.mainThread = new Thread(this, "GameLoop");
         this.mainThread.start();
@@ -39,13 +39,12 @@ public class Game implements Runnable{
     @Override
     public void run() {
         long previousTime = System.nanoTime();
-        while(isRunning){
+        while (isRunning) {
             long currentTime = System.nanoTime();
             float deltaTime = (currentTime - previousTime) / 1e9f;
             previousTime = currentTime;
 
             this.currentScene.update(deltaTime);
-//            this.gameWindow.getGameView().render();
         }
     }
 }

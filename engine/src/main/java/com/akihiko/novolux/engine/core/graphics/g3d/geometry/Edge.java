@@ -6,11 +6,12 @@ import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
 /**
  * Represents an Edge as a linear function in form of: x = f(y) = x0 + slope * intercept.
  * Reference: <a href="https://en.wikipedia.org/wiki/Linear_function">Linear Function</a>.
+ *
  * @author AK1HIKO
  * @project NovoLux
  * @created 28/11/22
  */
-public class Edge{
+public class Edge {
 
     private float posX;
     private final float posXSlope;
@@ -32,9 +33,9 @@ public class Edge{
     private float zDepth;
     private float zDepthSlope;
 
-    public Edge(Gradients gradients, Vertex start, Vertex end, int startIndex){
+    public Edge(Gradients gradients, Vertex start, Vertex end, int startIndex) {
         this.yStart = (int) Math.ceil(start.position().getY());
-        this.yEnd   = (int) Math.ceil(end.position().getY());
+        this.yEnd = (int) Math.ceil(end.position().getY());
 
         float yIntercept = yStart - start.position().getY();
 
@@ -66,7 +67,7 @@ public class Edge{
         this.zDepthSlope = gradients.getZDepthGradient().getYSlope() + gradients.getZDepthGradient().getXSlope() * posXSlope;
     }
 
-    public void stepAlong(){
+    public void stepAlong() {
         this.posX += this.posXSlope;
         this.texCoords = this.texCoords.add(this.texCoordsSlope);
         this.invZ += this.invZSlope;

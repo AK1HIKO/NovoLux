@@ -2,11 +2,9 @@ package com.akihiko.novolux.engine.core.math.gradients;
 
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * 3-value gradient.
+ *
  * @author AK1HIKO
  * @project NovoLux
  * @created 29/11/22
@@ -21,17 +19,18 @@ public class TriGradient {
     public TriGradient(float[] points, Vector2 start, Vector2 middle, Vector2 end) {
         this(points, start, middle, end,
                 1.0f / (
-                    ((middle.getX() - end.getX()) * ( start.getY() - end.getY()))
-                                                  -
-                    (( start.getX() - end.getX()) * (middle.getY() - end.getY()))
+                        ((middle.getX() - end.getX()) * (start.getY() - end.getY()))
+                                -
+                                ((start.getX() - end.getX()) * (middle.getY() - end.getY()))
                 )
         );
     }
 
-    public TriGradient(float[] points, Vector2 start, Vector2 middle, Vector2 end, float invdx){
+    public TriGradient(float[] points, Vector2 start, Vector2 middle, Vector2 end, float invdx) {
         this(points, start, middle, end, new Vector2(invdx, -invdx));
     }
-    public TriGradient(float[] points, Vector2 start, Vector2 middle, Vector2 end, Vector2 invd){
+
+    public TriGradient(float[] points, Vector2 start, Vector2 middle, Vector2 end, Vector2 invd) {
         this.invd = invd;
         this.points = points;
         this.xSlope = this.calculateSlope(this.points, start.getY(), middle.getY(), end.getY(), this.invd.getX());
@@ -40,6 +39,7 @@ public class TriGradient {
 
     /**
      * Linear single-axis interpolation:
+     *
      * @param points
      * @param start
      * @param middle
@@ -47,8 +47,8 @@ public class TriGradient {
      * @param invd
      * @return
      */
-    private float calculateSlope(float[] points, float start, float middle, float end, float invd){
-        return  (
+    private float calculateSlope(float[] points, float start, float middle, float end, float invd) {
+        return (
                 ((points[1] - points[2]) * (start - end))
                         -
                         ((points[0] - points[2]) * (middle - end))

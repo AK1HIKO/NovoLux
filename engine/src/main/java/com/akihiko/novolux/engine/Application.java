@@ -5,7 +5,6 @@ import com.akihiko.novolux.engine.utils.Logger;
 import com.akihiko.novolux.engine.utils.NovoLuxRuntimeException;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -21,12 +20,14 @@ public class Application extends JFrame {
     public static Application getInstance() {
         return Application.instance;
     }
+
     private final Game gameInstance;
     private final GameView gameView;
     private final InputManager inputManager;
+
     public Application(String title, int width, int height) {
         super();
-        if(Application.instance != null)
+        if (Application.instance != null)
             throw new NovoLuxRuntimeException("Unable to create Application. An Application instance already exists!");
 
         this.setTitle(title);
@@ -77,8 +78,8 @@ public class Application extends JFrame {
         return Application.instance.inputManager;
     }
 
-    private static void checkSingletonState(){
-        if(Application.instance == null)
+    private static void checkSingletonState() {
+        if (Application.instance == null)
             throw new NovoLuxRuntimeException("An application instance does not exist!");
     }
 }

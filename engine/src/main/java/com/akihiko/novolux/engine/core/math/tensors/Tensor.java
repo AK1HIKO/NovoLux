@@ -12,9 +12,11 @@ public interface Tensor<T extends Tensor> {
     T subtract(T b);
 
     T multiply(T b);
+
     T multiply(float scalar);
 
     T divide(T b);
+
     T divide(float scalar);
 
     T normalized();

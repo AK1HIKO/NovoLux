@@ -5,11 +5,12 @@ import com.akihiko.novolux.engine.core.math.MathUtils;
 
 /**
  * "Vector2"s are used to represent 2D coordinates for texture mapping and gradients.
+ *
  * @author AK1HIKO
  * @project NovoLux
  * @created 15/11/22
  */
-public class Vector2 extends Vector<Vector2>{
+public class Vector2 extends Vector<Vector2> {
 
     private float x;
     private float y;
@@ -19,11 +20,11 @@ public class Vector2 extends Vector<Vector2>{
         this.y = y;
     }
 
-    public Vector2(Vector2 copy){
+    public Vector2(Vector2 copy) {
         this(copy.x, copy.y);
     }
 
-    public Vector2(Vector4 v4){
+    public Vector2(Vector4 v4) {
         this(v4.getX(), v4.getY());
     }
 
@@ -46,44 +47,61 @@ public class Vector2 extends Vector<Vector2>{
     }
 
 
-    public static Vector2 RIGHT(){return new Vector2(1f, 0);}
-    public static Vector2 LEFT(){return new Vector2(-1f, 0);}
-    public static Vector2 UP(){return new Vector2(0, 1f);}
-    public static Vector2 DOWN(){return new Vector2(0, -1f);}
-    public static Vector2 ONE(){return new Vector2(1f, 1f);}
-    public static Vector2 ZERO(){return new Vector2(0, 0);}
+    public static Vector2 RIGHT() {
+        return new Vector2(1f, 0);
+    }
+
+    public static Vector2 LEFT() {
+        return new Vector2(-1f, 0);
+    }
+
+    public static Vector2 UP() {
+        return new Vector2(0, 1f);
+    }
+
+    public static Vector2 DOWN() {
+        return new Vector2(0, -1f);
+    }
+
+    public static Vector2 ONE() {
+        return new Vector2(1f, 1f);
+    }
+
+    public static Vector2 ZERO() {
+        return new Vector2(0, 0);
+    }
 
     @Override
-    public Vector2 add(Vector2 b){
+    public Vector2 add(Vector2 b) {
         return new Vector2(this.x + b.x, this.y + b.y);
     }
 
     @Override
-    public Vector2 subtract(Vector2 b){
+    public Vector2 subtract(Vector2 b) {
         return new Vector2(this.x - b.x, this.y - b.y);
     }
 
     @Override
-    public Vector2 multiply(float scalar){
+    public Vector2 multiply(float scalar) {
         return new Vector2(this.x * scalar, this.y * scalar);
     }
 
     @Override
-    public Vector2 multiply(Vector2 b){
+    public Vector2 multiply(Vector2 b) {
         return new Vector2(this.x * b.x, this.y * b.y);
     }
 
     @Override
     public Vector2 divide(Vector2 b) {
-        return new Vector2(this.x/b.x, this.y/b.y);
+        return new Vector2(this.x / b.x, this.y / b.y);
     }
 
     @Override
     public Vector2 divide(float scalar) {
-        return new Vector2(this.x/scalar, this.y/scalar);
+        return new Vector2(this.x / scalar, this.y / scalar);
     }
 
-    public Vector2 clamp(Vector2 min, Vector2 max){
+    public Vector2 clamp(Vector2 min, Vector2 max) {
         return new Vector2(
                 MathUtils.clamp(this.x, min.x, max.x),
                 MathUtils.clamp(this.y, min.y, max.y)
@@ -92,12 +110,12 @@ public class Vector2 extends Vector<Vector2>{
 
     @Override
     public float dot(Vector2 b) {
-        return this.x*b.x + this.y*b.y;
+        return this.x * b.x + this.y * b.y;
     }
 
     @Override
     public float magnitude() {
-        return (float) Math.sqrt(this.x*this.x + this.y*this.y);
+        return (float) Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
     @Override
@@ -111,8 +129,7 @@ public class Vector2 extends Vector<Vector2>{
 
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "(" + this.x + ", " + this.y + ")";
     }
 

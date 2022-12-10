@@ -1,10 +1,9 @@
 package com.akihiko.novolux.engine.core.math.tensors.vector;
 
-import com.akihiko.novolux.engine.core.math.tensors.matrix.Matrix4x4;
-
 /**
  * "Vector4"s are used to represent 3D position, scale and direction. Unlike Vector3, it has an additional "W" component,
  * that helps with affine transformation, proper projection, and fast depth-testing.
+ *
  * @author AK1HIKO
  * @project NovoLux
  * @created 15/11/22
@@ -27,25 +26,48 @@ public class Vector4 extends Vector<Vector4> {
         this(x, y, z, 1.0f);
     }
 
-    public Vector4(Vector4 copy){
+    public Vector4(Vector4 copy) {
         this.x = copy.x;
         this.y = copy.y;
         this.z = copy.z;
         this.w = copy.w;
     }
 
-    public static Vector4 RIGHT(){return new Vector4(1f, 0, 0);}
-    public static Vector4 LEFT(){return new Vector4(-1f, 0, 0);}
+    public static Vector4 RIGHT() {
+        return new Vector4(1f, 0, 0);
+    }
 
-    public static Vector4 UP(){return new Vector4(0, 1f, 0);}
-    public static Vector4 DOWN(){return new Vector4(0, -1f, 0);}
+    public static Vector4 LEFT() {
+        return new Vector4(-1f, 0, 0);
+    }
 
-    public static Vector4 FORWARD(){return new Vector4(0, 0, 1f);}
-    public static Vector4 BACK(){return new Vector4(0, 0, -1f);}
+    public static Vector4 UP() {
+        return new Vector4(0, 1f, 0);
+    }
 
-    public static Vector4 ONE(){return new Vector4(1f, 1f, 1f);}
-    public static Vector4 ZERO(){return new Vector4(0, 0, 0);}
-    public static Vector4 NULL(){return new Vector4(0, 0, 0, 0);}
+    public static Vector4 DOWN() {
+        return new Vector4(0, -1f, 0);
+    }
+
+    public static Vector4 FORWARD() {
+        return new Vector4(0, 0, 1f);
+    }
+
+    public static Vector4 BACK() {
+        return new Vector4(0, 0, -1f);
+    }
+
+    public static Vector4 ONE() {
+        return new Vector4(1f, 1f, 1f);
+    }
+
+    public static Vector4 ZERO() {
+        return new Vector4(0, 0, 0);
+    }
+
+    public static Vector4 NULL() {
+        return new Vector4(0, 0, 0, 0);
+    }
 
     public float getX() {
         return x;
@@ -84,45 +106,46 @@ public class Vector4 extends Vector<Vector4> {
     }
 
     @Override
-    public Vector4 add(Vector4 b){
-        return new Vector4(this.x + b.x, this.y + b.y, this.z + b.z, this.w +b.w);
+    public Vector4 add(Vector4 b) {
+        return new Vector4(this.x + b.x, this.y + b.y, this.z + b.z, this.w + b.w);
     }
 
     @Override
-    public Vector4 subtract(Vector4 b){
-        return new Vector4(this.x - b.x, this.y - b.y, this.z - b.z, this.w-b.w);
+    public Vector4 subtract(Vector4 b) {
+        return new Vector4(this.x - b.x, this.y - b.y, this.z - b.z, this.w - b.w);
     }
 
     @Override
-    public Vector4 multiply(float scalar){
-        return new Vector4(this.x * scalar, this.y * scalar, this.z * scalar, this.w*scalar);
+    public Vector4 multiply(float scalar) {
+        return new Vector4(this.x * scalar, this.y * scalar, this.z * scalar, this.w * scalar);
     }
+
     @Override
-    public Vector4 multiply(Vector4 b){
-        return new Vector4(this.x*b.x, this.y*b.y, this.z*b.z, this.w*b.w);
+    public Vector4 multiply(Vector4 b) {
+        return new Vector4(this.x * b.x, this.y * b.y, this.z * b.z, this.w * b.w);
     }
 
     @Override
     public Vector4 divide(Vector4 b) {
-        return new Vector4(this.x/b.x, this.y/b.y, this.z/b.z, this.w/b.w);
+        return new Vector4(this.x / b.x, this.y / b.y, this.z / b.z, this.w / b.w);
     }
 
     @Override
     public Vector4 divide(float scalar) {
-        return new Vector4(this.x/scalar, this.y/scalar, this.z/scalar, this.w/scalar);
+        return new Vector4(this.x / scalar, this.y / scalar, this.z / scalar, this.w / scalar);
     }
 
     @Override
-    public float magnitude(){
+    public float magnitude() {
         return (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
     @Override
-    public float dot(Vector4 b){
-        return this.x*b.x + this.y*b.y + this.z*b.z + this.w*b.w;
+    public float dot(Vector4 b) {
+        return this.x * b.x + this.y * b.y + this.z * b.z + this.w * b.w;
     }
 
-    public Vector4 cross(Vector4 b){
+    public Vector4 cross(Vector4 b) {
         return new Vector4(
                 this.y * b.z - this.z * b.y,
                 this.z * b.x - this.x * b.z,
@@ -130,30 +153,6 @@ public class Vector4 extends Vector<Vector4> {
                 0
         );
     }
-
-    @Deprecated
-    public Matrix4x4 toTranslationMatrix(){
-        Matrix4x4 result = Matrix4x4.IDENTITY();
-        result.getMatrix()[0][3] = this.x;
-        result.getMatrix()[1][3] = this.y;
-        result.getMatrix()[2][3] = this.z;
-        return result;
-    }
-
-    @Deprecated
-    public Matrix4x4 toScaleMatrix() {
-        Matrix4x4 result = Matrix4x4.IDENTITY();
-        result.getMatrix()[0][0] = this.x;
-        result.getMatrix()[1][1] = this.y;
-        result.getMatrix()[2][2] = this.z;
-        return result;
-    }
-
-    @Deprecated
-    public Vector4 removePerspective(){
-        return new Vector4(this.x / this.w, this.y/this.w, this.z/this.w, this.w);
-    }
-
 
     @Override
     public float get(int index) {
@@ -167,8 +166,7 @@ public class Vector4 extends Vector<Vector4> {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.w + ")";
     }
 

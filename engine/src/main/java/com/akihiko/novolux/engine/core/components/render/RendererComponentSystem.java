@@ -8,17 +8,10 @@ import com.akihiko.novolux.engine.core.components.TransformComponent;
 import com.akihiko.novolux.engine.core.components.camera.CameraComponent;
 import com.akihiko.novolux.engine.core.graphics.g3d.Mesh;
 import com.akihiko.novolux.engine.core.graphics.g3d.geometry.Vertex;
-import com.akihiko.novolux.engine.core.graphics.utils.OBJModelLoader;
 import com.akihiko.novolux.engine.core.math.tensors.matrix.Matrix4x4;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector3;
-import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
 import com.akihiko.novolux.engine.core.rendering.Renderer;
 import com.akihiko.novolux.engine.core.rendering.Texture;
 
-import java.awt.*;
-import java.io.File;
-import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -31,6 +24,7 @@ import java.util.Queue;
 public class RendererComponentSystem extends ComponentSystem {
 
     private static final int id = ComponentSystem.generateComponentSystemId();
+
     @Override
     public int ID() {
         return RendererComponentSystem.id;
@@ -39,6 +33,7 @@ public class RendererComponentSystem extends ComponentSystem {
 
     private final GameView gameView;
     private final CameraComponent mainCamera;
+
     public RendererComponentSystem(GameView gameView, CameraComponent mainCamera) {
         super(new EntitiesQuery(TransformComponent.id, MeshRendererComponent.id));
         this.gameView = gameView;
@@ -50,7 +45,7 @@ public class RendererComponentSystem extends ComponentSystem {
     public void onUpdate(List<EntityQueryResult> eComponents, float deltaTime) {
         // Since we do not reference this list anywhere outside, instead of O(n) clear, we can simply create a new one O(1):
         batch = new LinkedList<>();
-        for(EntityQueryResult qr : eComponents){
+        for (EntityQueryResult qr : eComponents) {
             MeshRendererComponent mr = (MeshRendererComponent) qr.components().get(MeshRendererComponent.id);
             TransformComponent tc = (TransformComponent) qr.components().get(TransformComponent.id);
             // TODO: Combine all the mesh data in one/two lists and then simply render them at once.
@@ -69,8 +64,9 @@ public class RendererComponentSystem extends ComponentSystem {
     }
 
     private Queue<BatchData> batch = new LinkedList<>();
-    private void render(Renderer renderer){
-        for(BatchData b : batch) {
+
+    private void render(Renderer renderer) {
+        for (BatchData b : batch) {
             this.drawMesh(renderer, b.mesh(), mainCamera.getViewProjectionMatrix(), b.transformationMatrix(), b.texture());
         }
 
@@ -106,16 +102,17 @@ public class RendererComponentSystem extends ComponentSystem {
 //        }
     }
 
-    private void drawMesh(Renderer renderer, Mesh mesh, Matrix4x4 viewProjectionMatrix, Matrix4x4 transformationMatrix, Texture texture){
+    private void drawMesh(Renderer renderer, Mesh mesh, Matrix4x4 viewProjectionMatrix, Matrix4x4 transformationMatrix, Texture texture) {
         transformationMatrix = viewProjectionMatrix.multiply(transformationMatrix);
-        for(int i = 0; i < mesh.getIndices().size(); i+=3){
-            Vertex a = mesh.getVerts().get(mesh.getIndices().get(i+0));
-            Vertex b = mesh.getVerts().get(mesh.getIndices().get(i+1));
-            Vertex c = mesh.getVerts().get(mesh.getIndices().get(i+2));
+        for (int i = 0; i < mesh.getIndices().size(); i += 3) {
+            Vertex a = mesh.getVerts().get(mesh.getIndices().get(i + 0));
+            Vertex b = mesh.getVerts().get(mesh.getIndices().get(i + 1));
+            Vertex c = mesh.getVerts().get(mesh.getIndices().get(i + 2));
             renderer.drawTriangle(a.transform(transformationMatrix), b.transform(transformationMatrix), c.transform(transformationMatrix), texture);
         }
     }
 
-    private record BatchData(Mesh mesh, Texture texture, Matrix4x4 transformationMatrix){}
+    private record BatchData(Mesh mesh, Texture texture, Matrix4x4 transformationMatrix) {
+    }
 
 }

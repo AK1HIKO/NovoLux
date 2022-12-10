@@ -17,23 +17,43 @@ public class Vector3 extends Vector<Vector3> {
         this.z = z;
     }
 
-    public Vector3(Vector3 copy){
+    public Vector3(Vector3 copy) {
         this.x = copy.x;
         this.y = copy.y;
         this.z = copy.z;
     }
 
-    public static Vector3 RIGHT(){return new Vector3(1f, 0, 0);}
-    public static Vector3 LEFT(){return new Vector3(-1f, 0, 0);}
+    public static Vector3 RIGHT() {
+        return new Vector3(1f, 0, 0);
+    }
 
-    public static Vector3 UP(){return new Vector3(0, 1f, 0);}
-    public static Vector3 DOWN(){return new Vector3(0, -1f, 0);}
+    public static Vector3 LEFT() {
+        return new Vector3(-1f, 0, 0);
+    }
 
-    public static Vector3 FORWARD(){return new Vector3(0, 0, 1f);}
-    public static Vector3 BACK(){return new Vector3(0, 0, -1f);}
+    public static Vector3 UP() {
+        return new Vector3(0, 1f, 0);
+    }
 
-    public static Vector3 ONE(){return new Vector3(1f, 1f, 1f);}
-    public static Vector3 ZERO(){return new Vector3(0, 0, 0);}
+    public static Vector3 DOWN() {
+        return new Vector3(0, -1f, 0);
+    }
+
+    public static Vector3 FORWARD() {
+        return new Vector3(0, 0, 1f);
+    }
+
+    public static Vector3 BACK() {
+        return new Vector3(0, 0, -1f);
+    }
+
+    public static Vector3 ONE() {
+        return new Vector3(1f, 1f, 1f);
+    }
+
+    public static Vector3 ZERO() {
+        return new Vector3(0, 0, 0);
+    }
 
     public float getX() {
         return x;
@@ -63,46 +83,46 @@ public class Vector3 extends Vector<Vector3> {
     }
 
     @Override
-    public Vector3 add(Vector3 b){
+    public Vector3 add(Vector3 b) {
         return new Vector3(this.x + b.x, this.y + b.y, this.z + b.z);
     }
 
     @Override
-    public Vector3 subtract(Vector3 b){
+    public Vector3 subtract(Vector3 b) {
         return new Vector3(this.x - b.x, this.y - b.y, this.z - b.z);
     }
 
     @Override
-    public Vector3 multiply(float scalar){
+    public Vector3 multiply(float scalar) {
         return new Vector3(this.x * scalar, this.y * scalar, this.z * scalar);
     }
 
     @Override
-    public Vector3 multiply(Vector3 b){
+    public Vector3 multiply(Vector3 b) {
         return new Vector3(this.x * b.x, this.y * b.y, this.z * b.z);
     }
 
     @Override
     public Vector3 divide(Vector3 b) {
-        return new Vector3(this.x/b.x, this.y/b.y, this.z/b.z);
+        return new Vector3(this.x / b.x, this.y / b.y, this.z / b.z);
     }
 
     @Override
     public Vector3 divide(float scalar) {
-        return new Vector3(this.x/scalar, this.y/scalar, this.z/scalar);
+        return new Vector3(this.x / scalar, this.y / scalar, this.z / scalar);
     }
 
     @Override
-    public float magnitude(){
+    public float magnitude() {
         return (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
     @Override
-    public float dot(Vector3 b){
-        return this.x*b.x + this.y*b.y + this.z*b.z;
+    public float dot(Vector3 b) {
+        return this.x * b.x + this.y * b.y + this.z * b.z;
     }
 
-    public Vector3 cross(Vector3 b){
+    public Vector3 cross(Vector3 b) {
         return new Vector3(
                 this.y * b.z - this.z * b.y,
                 this.z * b.x - this.x * b.z,
@@ -121,8 +141,7 @@ public class Vector3 extends Vector<Vector3> {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 

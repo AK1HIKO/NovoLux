@@ -2,10 +2,10 @@ package com.akihiko.novolux.engine.core.io;
 
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author AK1HIKO
@@ -57,7 +57,8 @@ public class InputManager implements FocusListener, KeyListener, MouseListener, 
     }
 
     @Override
-    public void focusGained(FocusEvent e) {  }
+    public void focusGained(FocusEvent e) {
+    }
 
     @Override
     public void focusLost(FocusEvent e) {
@@ -65,7 +66,7 @@ public class InputManager implements FocusListener, KeyListener, MouseListener, 
         this.mousePosition = Vector2.ZERO();
     }
 
-    public InputManager(Component component){
+    public InputManager(Component component) {
         this.mousePosition = Vector2.ZERO();
         this.downKeys = new HashSet<>();
 
@@ -74,19 +75,26 @@ public class InputManager implements FocusListener, KeyListener, MouseListener, 
         component.addMouseListener(this);
         component.addMouseMotionListener(this);
     }
-    public boolean isKeyDown(int keycode){
+
+    public boolean isKeyDown(int keycode) {
         return this.downKeys.contains(keycode);
     }
 
 
-
     // Redundant events:
     @Override
-    public void keyTyped(KeyEvent e) {  }
+    public void keyTyped(KeyEvent e) {
+    }
+
     @Override
-    public void mouseClicked(MouseEvent e) {  }
+    public void mouseClicked(MouseEvent e) {
+    }
+
     @Override
-    public void mouseEntered(MouseEvent e) {  }
+    public void mouseEntered(MouseEvent e) {
+    }
+
     @Override
-    public void mouseExited(MouseEvent e) {  }
+    public void mouseExited(MouseEvent e) {
+    }
 }

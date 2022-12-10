@@ -18,4 +18,16 @@ public class TagComponent extends Component {
 
     private String tag;
 
+    public TagComponent(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public TagComponent setTag(String tag) {
+        this.tag = tag;
+        return this;
+    }
 }

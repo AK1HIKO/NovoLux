@@ -14,4 +14,8 @@ public final class MathUtils {
     public static float clamp(float val, float min, float max) {
         return Math.max(min, Math.min(max, val));
     }
+
+    public static int unsigned(int val){
+        return (val & 0xFF);
+    }
 }

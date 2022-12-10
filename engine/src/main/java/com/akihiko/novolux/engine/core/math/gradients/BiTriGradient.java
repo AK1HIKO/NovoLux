@@ -46,6 +46,13 @@ public class BiTriGradient {
         return yGradient;
     }
 
+    public Vector2 getXSlopes(){
+        return new Vector2(xGradient.getXSlope(), yGradient.getXSlope());
+    }
+    public Vector2 getYSlopes(){
+        return new Vector2(xGradient.getYSlope(), yGradient.getYSlope());
+    }
+
     public Vector2 getInvd() {
         return this.invd;
     }

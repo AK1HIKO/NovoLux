@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class GameView extends Canvas {
 
     private final Queue<Consumer<Renderer>> renderQueue = new LinkedList<>();
-    private final Queue<Consumer<Graphics>> guiQueue = new LinkedList<>();
+    private final Queue<Consumer<Graphics2D>> guiQueue = new LinkedList<>();
 
     private FrameBuffer swapFrameBuffer;
     private byte[] renderBuffer;
@@ -64,7 +64,7 @@ public class GameView extends Canvas {
         this.renderQueue.add(renderCall);
     }
 
-    public void addGUICall(Consumer<Graphics> guiCall) {
+    public void addGUICall(Consumer<Graphics2D> guiCall) {
         this.guiQueue.add(guiCall);
     }
 
@@ -81,7 +81,7 @@ public class GameView extends Canvas {
 
         // Derive "Graphics2D" for GUI rendering:
         Graphics2D guiRenderer = renderImage.createGraphics();
-        for (Consumer<Graphics> guiCall : guiQueue) {
+        for (Consumer<Graphics2D> guiCall : guiQueue) {
             guiCall.accept(guiRenderer);
         }
         // Dispose of derived "Graphics2D"

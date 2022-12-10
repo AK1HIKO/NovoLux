@@ -1,5 +1,7 @@
 package com.akihiko.novolux.engine.core.rendering;
 
+import com.akihiko.novolux.engine.core.math.MathUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -43,6 +45,17 @@ public class Texture extends FrameBuffer {
         destination.data[desti + 3] = super.getByte(srci + 3);
         destination.data[desti + 2] = super.getByte(srci + 2);
         destination.data[desti + 1] = super.getByte(srci + 1);
+    }
+
+    public void copyTexel(int x, int y, FrameBuffer destination, int destX, int destY, float brightness) {
+        int desti = (destX + destY * destination.width) * 4;
+        int srci = (x + y * super.width) * 4;
+
+        destination.data[desti + 0] = (byte) (MathUtils.unsigned(super.getByte(srci + 0)) * brightness);
+
+        destination.data[desti + 3] = (byte) (MathUtils.unsigned(super.getByte(srci + 3)) * brightness);
+        destination.data[desti + 2] = (byte) (MathUtils.unsigned(super.getByte(srci + 2)) * brightness);
+        destination.data[desti + 1] = (byte) (MathUtils.unsigned(super.getByte(srci + 1)) * brightness);
     }
 
     private void setPixel(int index, int colorData) {

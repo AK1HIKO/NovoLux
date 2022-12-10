@@ -13,10 +13,14 @@ import com.akihiko.novolux.engine.core.math.tensors.vector.Vector4;
  * @project NovoLux
  * @created 27/11/22
  */
-public record Vertex(Vector4 position, Vector2 texCoords) {
+public record Vertex(Vector4 position, Vector2 texCoords, Vector4 normal) {
 
-    public Vertex transform(Matrix4x4 transformationMatrix) {
-        return new Vertex(transformationMatrix.transform(this.position), this.texCoords);
+    public Vertex transform(Matrix4x4 transformationMatrix, Matrix4x4 normalTransformationMatrix) {
+        return new Vertex(transformationMatrix.transform(this.position), this.texCoords, normalTransformationMatrix.transform(this.normal));
+    }
+
+    public Vertex transform(Matrix4x4 transformationMatrix){
+        return new Vertex(transformationMatrix.transform(this.position), this.texCoords, this.normal);
     }
 
     /**
@@ -37,24 +41,16 @@ public record Vertex(Vector4 position, Vector2 texCoords) {
                         // and without it, we can use this component later on for optimization.
                         this.position.getW()
                 ),
-                this.texCoords
+                this.texCoords,
+                this.normal
         );
-    }
-
-    public float twoAreas(Vertex b, Vertex c) {
-        float x1 = b.position.getX() - this.position.getX();
-        float y1 = b.position.getY() - this.position.getY();
-
-        float x2 = c.position.getX() - this.position.getX();
-        float y2 = c.position.getY() - this.position.getY();
-
-        return (x1 * y2 - x2 * y1);
     }
 
     public Vertex lerp(Vertex b, float t) {
         return new Vertex(
                 this.position.lerp(b.position, t),
-                this.texCoords.lerp(b.texCoords, t)
+                this.texCoords.lerp(b.texCoords, t),
+                this.normal.lerp(b.normal, t)
         );
     }
 

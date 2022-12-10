@@ -1,6 +1,6 @@
 package com.akihiko.novolux.engine.core.rendering;
 
-import com.akihiko.novolux.engine.core.graphics.g3d.Gradients;
+import com.akihiko.novolux.engine.core.graphics.g3d.Interpolations;
 import com.akihiko.novolux.engine.core.graphics.g3d.geometry.Edge;
 import com.akihiko.novolux.engine.core.graphics.g3d.geometry.Vertex;
 import com.akihiko.novolux.engine.core.math.tensors.matrix.Matrix4x4;
@@ -54,6 +54,18 @@ public class Renderer {
 
     }
 
+
+
+    public float calculateTriangleDoubleArea(Vertex a, Vertex b, Vertex c) {
+        float x1 = b.position().getX() - a.position().getX();
+        float y1 = b.position().getY() - a.position().getY();
+
+        float x2 = c.position().getX() - a.position().getX();
+        float y2 = c.position().getY() - a.position().getY();
+
+        return (x1 * y2 - x2 * y1);
+    }
+
     private void fillTriangle(Vertex a, Vertex b, Vertex c, Texture texture) {
         Matrix4x4 sstransform = Matrix4x4.WORLD_TO_SCREEN(this.renderBuffer.getWidth() / 2f, this.renderBuffer.getHeight() / 2f);
         Vertex minY = a.transform(sstransform).perspectiveDivide();
@@ -61,7 +73,7 @@ public class Renderer {
         Vertex maxY = c.transform(sstransform).perspectiveDivide();
 
         // Backface culling (only for the object)
-        if (minY.twoAreas(maxY, midY) >= 0)
+        if (calculateTriangleDoubleArea(minY, maxY, midY) >= 0)
             return;
 
         // Sort passed vertices by Y coordinate:
@@ -82,7 +94,7 @@ public class Renderer {
         }
 
         // TODO: Try to replace side with the actual X-coord sorting.
-        scanlineTriangle(minY, midY, maxY, minY.twoAreas(maxY, midY) >= 0, texture);
+        scanlineTriangle(minY, midY, maxY, calculateTriangleDoubleArea(minY, maxY, midY) >= 0, texture);
     }
 
     private boolean clipPolygonAxis(List<Vertex> polygonVerts, int clipAxisIndex) {
@@ -126,16 +138,16 @@ public class Renderer {
     }
 
     private void scanlineTriangle(Vertex minY, Vertex midY, Vertex maxY, boolean side, Texture texture) {
-        Gradients textureGradients = new Gradients(minY, midY, maxY);
-        Edge ac = new Edge(textureGradients, minY, maxY, 0);
-        Edge ab = new Edge(textureGradients, minY, midY, 0);
-        Edge bc = new Edge(textureGradients, midY, maxY, 1);
+        Interpolations interpolations = new Interpolations(minY, midY, maxY);
+        Edge ac = new Edge(interpolations, minY, maxY, 0);
+        Edge ab = new Edge(interpolations, minY, midY, 0);
+        Edge bc = new Edge(interpolations, midY, maxY, 1);
 
-        scanlineEdge(ac, ab, side, texture);
-        scanlineEdge(ac, bc, side, texture);
+        scanlineEdge(interpolations, ac, ab, side, texture);
+        scanlineEdge(interpolations, ac, bc, side, texture);
     }
 
-    private void scanlineEdge(Edge a, Edge b, boolean side, Texture texture) {
+    private void scanlineEdge(Interpolations interpolations, Edge a, Edge b, boolean side, Texture texture) {
         Edge left = a;
         Edge right = b;
         if (side) {
@@ -147,7 +159,7 @@ public class Renderer {
         int yStart = b.getYStart();
         int yEnd = b.getYEnd();
         for (int y = yStart; y < yEnd; y++) {
-            this.renderScanline(left, right, y, texture);
+            this.renderScanline(interpolations, left, right, y, texture);
             left.stepAlong();
             right.stepAlong();
         }
@@ -157,21 +169,22 @@ public class Renderer {
         Arrays.fill(zBuffer, Float.MAX_VALUE);
     }
 
-    private void renderScanline(Edge left, Edge right, int y, Texture texture) {
+    private void renderScanline(Interpolations interpolations, Edge left, Edge right, int y, Texture texture) {
         int xMin = (int) Math.ceil(left.getPosX());
         int xMax = (int) Math.ceil(right.getPosX());
         float xDist = right.getPosX() - left.getPosX();
 
         float xIntercept = xMin - left.getPosX();
 
-        // Recalculate slopes. This prevents floating-point error accumulation:
-        Vector2 newTexCoordXSlopes = right.getTexCoords().subtract(left.getTexCoords()).divide(xDist);
-        float newInvZSlope = (right.getInvZ() - left.getInvZ()) / xDist;
-        float newZDepthSlope = (right.getZDepth() - left.getZDepth()) / xDist;
+        Vector2 texCoordXSlopes = interpolations.getTexCoordsBiGradient().getXSlopes();
+        float invZSlope = interpolations.getInvZGradient().getXSlope();
+        float zDepthSlope = interpolations.getZDepthGradient().getXSlope();
+        float lightSlope = interpolations.getLightGradient().getXSlope();
 
-        Vector2 texCoord = left.getTexCoords().add(newTexCoordXSlopes.multiply(xIntercept));
-        float invZ = left.getInvZ() + newInvZSlope * xIntercept;
-        float zDepth = left.getZDepth() + newZDepthSlope * xIntercept;
+        Vector2 texCoord = left.getTexCoords().add(texCoordXSlopes.multiply(xIntercept));
+        float invZ = left.getInvZ() + invZSlope * xIntercept;
+        float zDepth = left.getZDepth() + zDepthSlope * xIntercept;
+        float light = left.getLight() + lightSlope * xIntercept;
 
         for (int x = xMin; x < xMax; x++) {
             int i = x + y * this.renderBuffer.width;
@@ -179,11 +192,14 @@ public class Renderer {
                 zBuffer[i] = zDepth;
                 float z = 1.0f / invZ;
                 Vector2 src = texCoord.multiply(z).multiply(new Vector2(texture.getWidth() - 1f, texture.getHeight() - 1f));
-                texture.copyTexel(Math.round(src.getX()), Math.round(src.getY()), this.renderBuffer, x, y);
+
+                // Set the light as brightness multiplier
+                texture.copyTexel(Math.round(src.getX()), Math.round(src.getY()), this.renderBuffer, x, y, light);
             }
-            invZ += newInvZSlope;
-            texCoord = texCoord.add(newTexCoordXSlopes);
-            zDepth += newZDepthSlope;
+            texCoord = texCoord.add(texCoordXSlopes);
+            invZ += invZSlope;
+            zDepth += zDepthSlope;
+            light += lightSlope;
         }
     }
 }

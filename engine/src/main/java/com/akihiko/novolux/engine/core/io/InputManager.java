@@ -80,6 +80,9 @@ public class InputManager implements FocusListener, KeyListener, MouseListener, 
         return this.downKeys.contains(keycode);
     }
 
+    public Vector2 getMousePosition() {
+        return mousePosition;
+    }
 
     // Redundant events:
     @Override

@@ -18,7 +18,7 @@ public class Mesh {
     public Mesh(Model model) {
         this.verts = new ArrayList<>();
         for (int i = 0; i < model.getPositions().size(); i++) {
-            this.verts.add(new Vertex(model.getPositions().get(i), model.getTexCoords().get(i)));
+            this.verts.add(new Vertex(model.getPositions().get(i), model.getTexCoords().get(i), model.getNormals().get(i)));
         }
         this.indices = model.getIndices();
     }

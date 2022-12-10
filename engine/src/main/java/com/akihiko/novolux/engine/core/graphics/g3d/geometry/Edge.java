@@ -1,6 +1,6 @@
 package com.akihiko.novolux.engine.core.graphics.g3d.geometry;
 
-import com.akihiko.novolux.engine.core.graphics.g3d.Gradients;
+import com.akihiko.novolux.engine.core.graphics.g3d.Interpolations;
 import com.akihiko.novolux.engine.core.math.tensors.vector.Vector2;
 
 /**
@@ -28,12 +28,15 @@ public class Edge {
      * <a href="https://www.youtube.com/watch?v=RyYEGdGwnFs">Affine vs perspective-correct texture mapping example</a>
      */
     private float invZ;
-    private float invZSlope;
+    private final float invZSlope;
 
     private float zDepth;
-    private float zDepthSlope;
+    private final float zDepthSlope;
 
-    public Edge(Gradients gradients, Vertex start, Vertex end, int startIndex) {
+    private float light;
+    private final float lightSlope;
+
+    public Edge(Interpolations interpolations, Vertex start, Vertex end, int startIndex) {
         this.yStart = (int) Math.ceil(start.position().getY());
         this.yEnd = (int) Math.ceil(end.position().getY());
 
@@ -47,24 +50,27 @@ public class Edge {
 
         // TODO: texGradient.getTexCoord(startIndex);
         this.texCoords = new Vector2(
-                gradients.getTexCoord(startIndex).getX()
-                        + gradients.getTexCoordsBiGradient().getXGradient().getXSlope() * xIntercept
-                        + gradients.getTexCoordsBiGradient().getXGradient().getYSlope() * yIntercept,
+                interpolations.getTexCoord(startIndex).getX()
+                        + interpolations.getTexCoordsBiGradient().getXGradient().getXSlope() * xIntercept
+                        + interpolations.getTexCoordsBiGradient().getXGradient().getYSlope() * yIntercept,
 
-                gradients.getTexCoord(startIndex).getY()
-                        + gradients.getTexCoordsBiGradient().getYGradient().getXSlope() * xIntercept
-                        + gradients.getTexCoordsBiGradient().getYGradient().getYSlope() * yIntercept
+                interpolations.getTexCoord(startIndex).getY()
+                        + interpolations.getTexCoordsBiGradient().getYGradient().getXSlope() * xIntercept
+                        + interpolations.getTexCoordsBiGradient().getYGradient().getYSlope() * yIntercept
         );
         this.texCoordsSlope = new Vector2(
-                gradients.getTexCoordsBiGradient().getXGradient().getYSlope() + gradients.getTexCoordsBiGradient().getXGradient().getXSlope() * posXSlope,
-                gradients.getTexCoordsBiGradient().getYGradient().getYSlope() + gradients.getTexCoordsBiGradient().getYGradient().getXSlope() * posXSlope
+                interpolations.getTexCoordsBiGradient().getXGradient().getYSlope() + interpolations.getTexCoordsBiGradient().getXGradient().getXSlope() * posXSlope,
+                interpolations.getTexCoordsBiGradient().getYGradient().getYSlope() + interpolations.getTexCoordsBiGradient().getYGradient().getXSlope() * posXSlope
         );
 
-        this.invZ = gradients.getInvZ(startIndex) + gradients.getInvZGradient().getYSlope() * yIntercept + gradients.getInvZGradient().getXSlope() * xIntercept;
-        this.invZSlope = gradients.getInvZGradient().getYSlope() + gradients.getInvZGradient().getXSlope() * posXSlope;
+        this.invZ = interpolations.getInvZ(startIndex) + interpolations.getInvZGradient().getYSlope() * yIntercept + interpolations.getInvZGradient().getXSlope() * xIntercept;
+        this.invZSlope = interpolations.getInvZGradient().getYSlope() + interpolations.getInvZGradient().getXSlope() * posXSlope;
 
-        this.zDepth = gradients.getZDepth(startIndex) + gradients.getZDepthGradient().getYSlope() * yIntercept + gradients.getZDepthGradient().getXSlope() * xIntercept;
-        this.zDepthSlope = gradients.getZDepthGradient().getYSlope() + gradients.getZDepthGradient().getXSlope() * posXSlope;
+        this.zDepth = interpolations.getZDepth(startIndex) + interpolations.getZDepthGradient().getYSlope() * yIntercept + interpolations.getZDepthGradient().getXSlope() * xIntercept;
+        this.zDepthSlope = interpolations.getZDepthGradient().getYSlope() + interpolations.getZDepthGradient().getXSlope() * posXSlope;
+
+        this.light = interpolations.getLight(startIndex) + interpolations.getLightGradient().getYSlope() * yIntercept + interpolations.getLightGradient().getXSlope() * xIntercept;
+        this.lightSlope = interpolations.getLightGradient().getYSlope() + interpolations.getLightGradient().getXSlope() * posXSlope;
     }
 
     public void stepAlong() {
@@ -72,6 +78,7 @@ public class Edge {
         this.texCoords = this.texCoords.add(this.texCoordsSlope);
         this.invZ += this.invZSlope;
         this.zDepth += this.zDepthSlope;
+        this.light += this.lightSlope;
     }
 
     public float getPosX() {
@@ -110,17 +117,15 @@ public class Edge {
         return zDepth;
     }
 
-    public Edge setZDepth(float zDepth) {
-        this.zDepth = zDepth;
-        return this;
-    }
-
     public float getZDepthSlope() {
         return zDepthSlope;
     }
 
-    public Edge setzDepthSlope(float zDepthSlope) {
-        this.zDepthSlope = zDepthSlope;
-        return this;
+    public float getLight() {
+        return light;
+    }
+
+    public float getLightSlope() {
+        return lightSlope;
     }
 }

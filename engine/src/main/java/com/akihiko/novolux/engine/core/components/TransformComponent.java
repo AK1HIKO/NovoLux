@@ -42,6 +42,9 @@ public class TransformComponent extends Component {
     public void rotate(Quaternion rotation) {
         this.rotation = this.rotation.multiply(rotation).normalized();
     }
+    public void translate(Vector3 translation){
+        this.position = this.position.add(translation);
+    }
 
     public Matrix4x4 getTransformationMatrix() {
         Matrix4x4 translation = Matrix4x4.TRANSLATION(this.position);

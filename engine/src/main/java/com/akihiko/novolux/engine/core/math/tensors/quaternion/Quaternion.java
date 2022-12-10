@@ -29,13 +29,14 @@ public class Quaternion extends Vector<Quaternion> {
         this.w = w;
     }
 
-    public Quaternion(Vector3 axis, float angle){
-        float sin = (float) Math.sin(angle / 2);
+    public Quaternion(Vector3 axis, float angleDeg){
+        float angleRad = (float) Math.toRadians(angleDeg / 2);
+        float sin = (float) Math.sin(angleRad);
 
         this.x = axis.getX() * sin;
         this.y = axis.getY() * sin;
         this.z = axis.getZ() * sin;
-        this.w = (float) Math.cos(angle / 2);
+        this.w = (float) Math.cos(angleRad);
     }
 
     @Override

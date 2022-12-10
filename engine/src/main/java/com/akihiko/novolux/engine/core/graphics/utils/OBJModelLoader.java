@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author AK1HIKO
@@ -30,7 +31,7 @@ public class OBJModelLoader implements ModelLoader {
         }
     }
 
-    // Adapted from https://github.com/Blunderchips/LWJGL-OBJ-Loader
+    // Adapted from https://github.com/BennyQBD/3DEngineCpp/tree/a9264241bfa553ca1dde0277391c6c7e69854f26
     private Model parseObj(File file) throws FileNotFoundException {
         FileInputStream fis = new FileInputStream(file);
         Scanner sc = new Scanner(fis);
@@ -40,7 +41,8 @@ public class OBJModelLoader implements ModelLoader {
         while (sc.hasNextLine()) {
             String ln = sc.nextLine();
             String[] tokens = ln.split(" ");
-            tokens = RemoveEmptyStrings(tokens);
+            // Removes empty entries:
+            tokens = Arrays.stream(tokens).filter((str) -> !str.trim().isEmpty()).toList().toArray(String[]::new);
 
             if (ln == null || ln.trim().isEmpty() || ln.startsWith("#"))
                 continue;
@@ -80,21 +82,6 @@ public class OBJModelLoader implements ModelLoader {
         sc.close();
         return interm.toModel();
     }
-
-    private static String[] RemoveEmptyStrings(String[] data)
-    {
-        List<String> result = new ArrayList<>();
-
-        for(int i = 0; i < data.length; i++)
-            if(!data[i].equals(""))
-                result.add(data[i]);
-
-        String[] res = new String[result.size()];
-        result.toArray(res);
-
-        return res;
-    }
-
 
     private Index parseIndex(String token, OBJModel out)
     {

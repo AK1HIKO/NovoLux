@@ -1,5 +1,6 @@
 package com.akihiko.novolux.engine;
 
+import com.akihiko.novolux.engine.core.io.InputManager;
 import com.akihiko.novolux.engine.utils.Logger;
 import com.akihiko.novolux.engine.utils.NovoLuxRuntimeException;
 
@@ -22,6 +23,7 @@ public class Application extends JFrame {
     }
     private final Game gameInstance;
     private final GameView gameView;
+    private final InputManager inputManager;
     public Application(String title, int width, int height) {
         super();
         if(Application.instance != null)
@@ -51,6 +53,8 @@ public class Application extends JFrame {
 
         Application.instance = this;
         this.gameView.init();
+
+        this.inputManager = new InputManager(this.gameView);
     }
 
     public void start() {
@@ -58,11 +62,23 @@ public class Application extends JFrame {
         this.gameInstance.start();
     }
 
-    public Game getGameInstance() {
-        return gameInstance;
+    public static Game getGameInstance() {
+        Application.checkSingletonState();
+        return Application.instance.gameInstance;
     }
 
-    public GameView getGameView() {
-        return gameView;
+    public static GameView getGameView() {
+        Application.checkSingletonState();
+        return Application.instance.gameView;
+    }
+
+    public static InputManager getInputManager() {
+        Application.checkSingletonState();
+        return Application.instance.inputManager;
+    }
+
+    private static void checkSingletonState(){
+        if(Application.instance == null)
+            throw new NovoLuxRuntimeException("An application instance does not exist!");
     }
 }

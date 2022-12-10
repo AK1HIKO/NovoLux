@@ -19,14 +19,20 @@ public abstract class Scene {
 
     public abstract void create();
 
-    private long previousFrame = 0L;
-    private float getDeltaTime(){
-        float deltaTime = previousFrame/100_000_000_000_000f;
-        previousFrame = System.nanoTime();
-        return deltaTime;
-    }
-    public final void update(){
-        float deltaTime = getDeltaTime();
+    private float frames = 0;
+    private long previousTime = 0L;
+    public final void update(float deltaTime){
+//        float deltaTime = getDeltaTime();
+//        previousTime = System.nanoTime();
+
+//        long currentTime = System.currentTimeMillis();
+//        float elapsed = (currentTime - previousTime);
+//        if(elapsed > 1000){
+//            previousTime = currentTime;
+//            System.out.println(frames);
+//            frames = 0;
+//        }
+
         this.ECSManager.lifecycleStart();
 
         for(ComponentSystem system : this.ECSManager.getGeneralComponentSystems()){
@@ -58,6 +64,7 @@ public abstract class Scene {
 //        });
         Application.getInstance().getGameView().render();
         this.ECSManager.lifecycleEnd();
+        frames++;
 //        for(ComponentSystem system : this.ECSManager.getComponentSystems()){
 //            system.onUpdate(this.ECSManager.queryEntities(system.getDependencies()), deltaTime);
 //        }

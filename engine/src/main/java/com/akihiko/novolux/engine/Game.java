@@ -26,7 +26,7 @@ public class Game implements Runnable{
         this.mainThread.start();
     }
 
-    public synchronized void stop(){
+    public synchronized void stop() {
         try {
             this.mainThread.join();
             // If stopped successfully:
@@ -38,8 +38,13 @@ public class Game implements Runnable{
 
     @Override
     public void run() {
+        long previousTime = System.nanoTime();
         while(isRunning){
-            this.currentScene.update();
+            long currentTime = System.nanoTime();
+            float deltaTime = (currentTime - previousTime) / 1e9f;
+            previousTime = currentTime;
+
+            this.currentScene.update(deltaTime);
 //            this.gameWindow.getGameView().render();
         }
     }

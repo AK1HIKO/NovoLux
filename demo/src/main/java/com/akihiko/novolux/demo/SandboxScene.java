@@ -58,8 +58,8 @@ public class SandboxScene extends Scene {
             // Import a map model.
             super.ECSManager.emplaceComponent(map.getId(), new TransformComponent(new Vector3(0, -1, 0), Quaternion.IDENTITY(), new Vector3(0.25f, 0.25f, 0.25f)));
             super.ECSManager.emplaceComponent(map.getId(), new MeshRendererComponent(
-                    new Mesh(new OBJModelLoader().loadModel(Path.of(Thread.currentThread().getContextClassLoader().getResource("map.obj").toURI()))),
-                    Texture.fromImage(new File(Thread.currentThread().getContextClassLoader().getResource("texture_atlas.png").getFile())),
+                    new Mesh(new OBJModelLoader().loadModel(new File("assets/map.obj").getAbsoluteFile().toPath())),
+                    Texture.fromImage(new File("assets/texture_atlas.png").getAbsoluteFile()),
                     MeshRendererComponent.MeshRenderingType.SOLID
             ));
 
@@ -78,8 +78,8 @@ public class SandboxScene extends Scene {
 
     private void createMonkey(Entity monkey, TransformComponent transformComponent, String objname, float degPerSecond) throws IOException, URISyntaxException {
         super.ECSManager.emplaceComponent(monkey.getId(), transformComponent);
-        super.ECSManager.emplaceComponent(monkey.getId(), new MeshRendererComponent(new Mesh(new OBJModelLoader().loadModel(Path.of(Thread.currentThread().getContextClassLoader().getResource(objname).toURI()))),
-                Texture.fromImage(new File(Thread.currentThread().getContextClassLoader().getResource("brick-texture.png").getFile())),
+        super.ECSManager.emplaceComponent(monkey.getId(), new MeshRendererComponent(new Mesh(new OBJModelLoader().loadModel(new File(objname).getAbsoluteFile().toPath())),
+                Texture.fromImage(new File("assets/brick-texture.png").getAbsoluteFile()),
                 MeshRendererComponent.MeshRenderingType.SOLID
         ));
         super.ECSManager.emplaceComponent(monkey.getId(), new MonkeyRotatorComponent(degPerSecond));
@@ -87,11 +87,11 @@ public class SandboxScene extends Scene {
     }
 
     private void createMonkey(Entity monkey, TransformComponent transformComponent, float degPerSecond) throws IOException, URISyntaxException {
-        createMonkey(monkey, transformComponent, "primitives/monkey.obj", degPerSecond);
+        createMonkey(monkey, transformComponent, "assets/primitives/monkey.obj", degPerSecond);
     }
 
     private void createSmoothMonkey(Entity monkey, TransformComponent transformComponent, float degPerSecond) throws IOException, URISyntaxException {
-        createMonkey(monkey, transformComponent, "primitives/smonkey.obj", degPerSecond);
+        createMonkey(monkey, transformComponent, "assets/primitives/smonkey.obj", degPerSecond);
     }
 
     private void drawDemoGUI(Graphics2D g) {

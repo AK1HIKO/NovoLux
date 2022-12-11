@@ -15,7 +15,7 @@ public class CameraComponent extends Component {
 
     @Override
     public int ID() {
-        return id;
+        return CameraComponent.id;
     }
 
     public enum ProjectionType {

@@ -54,12 +54,11 @@ public class CameraMovementSystem extends ComponentSystem {
 
             if (Application.getInputManager().isKeyDown(KeyEvent.VK_UP))
                 transform.rotate(new Quaternion(Vector3.LEFT(), sensY * deltaTime));
-            if (Application.getInputManager().isKeyDown(KeyEvent.VK_DOWN))
+            else if (Application.getInputManager().isKeyDown(KeyEvent.VK_DOWN))
                 transform.rotate(new Quaternion(Vector3.RIGHT(), sensY * deltaTime));
-
-            if (Application.getInputManager().isKeyDown(KeyEvent.VK_LEFT))
+            else if (Application.getInputManager().isKeyDown(KeyEvent.VK_LEFT))
                 transform.rotate(new Quaternion(Vector3.DOWN(), sensX * deltaTime));
-            if (Application.getInputManager().isKeyDown(KeyEvent.VK_RIGHT))
+            else if (Application.getInputManager().isKeyDown(KeyEvent.VK_RIGHT))
                 transform.rotate(new Quaternion(Vector3.UP(), sensX * deltaTime));
         }
     }

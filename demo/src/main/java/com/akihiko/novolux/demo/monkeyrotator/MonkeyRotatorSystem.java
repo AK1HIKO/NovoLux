@@ -1,4 +1,4 @@
-package com.akihiko.novolux.demo;
+package com.akihiko.novolux.demo.monkeyrotator;
 
 import com.akihiko.novolux.ecs.ComponentSystem;
 import com.akihiko.novolux.ecs.EntitiesQuery;
@@ -26,11 +26,12 @@ public class MonkeyRotatorSystem extends ComponentSystem {
         return MonkeyRotatorSystem.id;
     }
 
-    protected MonkeyRotatorSystem() {
+    public MonkeyRotatorSystem() {
         super(new EntitiesQuery(
                 TransformComponent.id,
                 TagComponent.id,
-                MeshRendererComponent.id
+                MeshRendererComponent.id,
+                MonkeyRotatorComponent.id
         ));
     }
 
@@ -50,7 +51,9 @@ public class MonkeyRotatorSystem extends ComponentSystem {
                 continue;
 
             TransformComponent transform = (TransformComponent) qr.components().get(TransformComponent.id);
-            transform.rotate(new Quaternion(Vector3.UP(), 90f * deltaTime));
+            MonkeyRotatorComponent monkeyRotatorComponent = (MonkeyRotatorComponent) qr.components().get(MonkeyRotatorComponent.id);
+
+            transform.rotate(new Quaternion(Vector3.UP(), monkeyRotatorComponent.degPerSecond * deltaTime));
         }
     }
 }

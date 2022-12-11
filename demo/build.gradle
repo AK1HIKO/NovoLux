@@ -1,5 +1,5 @@
 group 'com.akihiko.novolux.demo'
-version '1.0.0-stable'
+version '1.0.5-stable'
 
 dependencies {
     implementation project(":ecs")

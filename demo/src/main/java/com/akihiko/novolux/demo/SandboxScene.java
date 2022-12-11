@@ -1,5 +1,7 @@
 package com.akihiko.novolux.demo;
 
+import com.akihiko.novolux.demo.monkeyrotator.MonkeyRotatorComponent;
+import com.akihiko.novolux.demo.monkeyrotator.MonkeyRotatorSystem;
 import com.akihiko.novolux.ecs.Entity;
 import com.akihiko.novolux.engine.Application;
 import com.akihiko.novolux.engine.core.components.TagComponent;
@@ -46,11 +48,12 @@ public class SandboxScene extends Scene {
             super.ECSManager.emplaceComponent(camera.getId(), new TransformComponent(new Vector3(0, 0, 0)));
             super.ECSManager.emplaceComponent(camera.getId(), mainCameraComponent);
 
-            // Create 3 monkeys:
-            createMonkey(monkey1, new TransformComponent(new Vector3(0, 0, 5f)));
-            // Create a monkey with smooth-shading enabled.
-            createSmoothMonkey(monkey2, new TransformComponent(new Vector3(-3f, 1f, 5f), Quaternion.IDENTITY(), new Vector3(0.5f, 0.5f, 0.5f)));
-            createMonkey(monkey3, new TransformComponent(new Vector3(4f, 0f, 5f), Quaternion.IDENTITY(), new Vector3(1.5f, 1.5f, 1.5f)));
+            // Create 3 monkeys, that is rotating at speed 45 degrees a second:
+            createMonkey(monkey1, new TransformComponent(new Vector3(0, 0, 5f)), 45f);
+            // Create a monkey with smooth-shading enabled, with speed 90 degrees a second.
+            createSmoothMonkey(monkey2, new TransformComponent(new Vector3(-3f, 1f, 5f), Quaternion.IDENTITY(), new Vector3(0.5f, 0.5f, 0.5f)), 90f);
+            // Create a flat shading monkey with speed 180 degrees a second.
+            createMonkey(monkey3, new TransformComponent(new Vector3(4f, 0f, 5f), Quaternion.IDENTITY(), new Vector3(1.5f, 1.5f, 1.5f)), 180f);
 
             // Import a map model.
             super.ECSManager.emplaceComponent(map.getId(), new TransformComponent(new Vector3(0, -1, 0), Quaternion.IDENTITY(), new Vector3(0.25f, 0.25f, 0.25f)));
@@ -73,21 +76,22 @@ public class SandboxScene extends Scene {
         }
     }
 
-    private void createMonkey(Entity monkey, TransformComponent transformComponent, String objname) throws IOException, URISyntaxException {
+    private void createMonkey(Entity monkey, TransformComponent transformComponent, String objname, float degPerSecond) throws IOException, URISyntaxException {
         super.ECSManager.emplaceComponent(monkey.getId(), transformComponent);
         super.ECSManager.emplaceComponent(monkey.getId(), new MeshRendererComponent(new Mesh(new OBJModelLoader().loadModel(Path.of(Thread.currentThread().getContextClassLoader().getResource(objname).toURI()))),
                 Texture.fromImage(new File(Thread.currentThread().getContextClassLoader().getResource("brick-texture.png").getFile())),
                 MeshRendererComponent.MeshRenderingType.SOLID
         ));
+        super.ECSManager.emplaceComponent(monkey.getId(), new MonkeyRotatorComponent(degPerSecond));
         super.ECSManager.emplaceComponent(monkey.getId(), new TagComponent("monkey"));
     }
 
-    private void createMonkey(Entity monkey, TransformComponent transformComponent) throws IOException, URISyntaxException {
-        createMonkey(monkey, transformComponent, "primitives/monkey.obj");
+    private void createMonkey(Entity monkey, TransformComponent transformComponent, float degPerSecond) throws IOException, URISyntaxException {
+        createMonkey(monkey, transformComponent, "primitives/monkey.obj", degPerSecond);
     }
 
-    private void createSmoothMonkey(Entity monkey, TransformComponent transformComponent) throws IOException, URISyntaxException {
-        createMonkey(monkey, transformComponent, "primitives/smonkey.obj");
+    private void createSmoothMonkey(Entity monkey, TransformComponent transformComponent, float degPerSecond) throws IOException, URISyntaxException {
+        createMonkey(monkey, transformComponent, "primitives/smonkey.obj", degPerSecond);
     }
 
     private void drawDemoGUI(Graphics2D g) {

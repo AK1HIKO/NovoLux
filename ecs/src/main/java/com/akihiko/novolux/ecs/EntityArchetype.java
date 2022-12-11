@@ -108,7 +108,6 @@ public class EntityArchetype {
     }
 
 
-    // TODO: Improve:
     @Override
     public int hashCode() {
         return Long.hashCode(id);

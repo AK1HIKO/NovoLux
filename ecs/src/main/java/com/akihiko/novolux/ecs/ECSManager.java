@@ -54,10 +54,8 @@ public class ECSManager {
         return generalComponentSystems.add(newComponentSystem);
     }
 
-    public boolean removeGeneralComponentSystem(){
-        // TODO: Not Implemented yet
-        throw new UnsupportedOperationException();
-//        return false;
+    public boolean removeGeneralComponentSystem(ComponentSystem componentSystem){
+        return generalComponentSystems.remove(componentSystem);
     }
 
     public Set<ComponentSystem> getGeneralComponentSystems() {
@@ -160,7 +158,6 @@ public class ECSManager {
      * Map&lt;ComponentId, Set&lt;EntityArchetypeId&gt;&gt;<br/>
      * Indicates in what Archetypes, does the ComponentId exist. Used to speed up "entity.has" operation, providing constant time.
      */
-    // TODO: Perform additional tests, whether it is working properly.
     private final Map<Integer, Set<Long>> cidToArchetypeIds = new HashMap<>();
 
     /**

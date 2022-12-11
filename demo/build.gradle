@@ -1,5 +1,5 @@
 group 'com.akihiko.novolux.demo'
-version '1.1.0-stable'
+version '1.1.1-stable'
 
 dependencies {
     implementation project(":ecs")
@@ -15,7 +15,7 @@ jar{
 }
 
 task copyAssets(type: Copy) {
-    from "assets"
+    from "${rootProject.projectDir}/assets"
     include "*/**"
     into "${buildDir}/libs/assets"
 }
